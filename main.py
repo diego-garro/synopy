@@ -12,3 +12,4 @@ for line in data:
     print("Tipo de estación: {}".format(synoptic_report.station_type))
     print("Nombre de la estación: {}".format(synoptic_report.station_name))
     print("Unidades del viento: {}".format(synoptic_report.wind_units))
+    print(synoptic_report.errors)
