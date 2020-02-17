@@ -12,7 +12,7 @@ class Group:
     _found = True
     _group_objetive = ''
     
-    def __init__(self, group, name):
+    def __init__(self, group: str, name: str):
         self.group = group
         self.name = name
         self.length = len(group)
@@ -41,5 +41,13 @@ class Group:
         if isinstance(values, int):
             if indicator != values:
                 self.errors.append(ERRORS[4].format(indicator_name, indicator_objetive, table))
+    
+    def __str__(self):
+        return "Group name: {}.".format(self.name)
 
-            
+class Section:
+    
+    def __init__(self, section: list):
+        self.section = section
+        self.length = len(section)
+        
