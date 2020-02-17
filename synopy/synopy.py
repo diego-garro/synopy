@@ -1,6 +1,7 @@
 
 import re
 from .utils import station_tools as tools
+from datetime import datetime
 
 ERRORS = {
     1 : "Indicator {} for {} is not in {}."
@@ -60,5 +61,17 @@ class Synoptic:
                 break
             section.append(group)
         return section
+    
+    def _write_report_characteristics(self):
+        container = []
+        date = datetime.strftime(self.date, "Date: %Y/%m/%d %H:%M:00.")
+        container.append(date)
+        container.append("Station type: {}.".format(self.station_type))
+        container.append("Station name: {}.".format(self.station_name))
+        container.append("Wind units: {}".format(self.wind_units))
+        return "\n".join(container)
+    
+    def __str__(self):
+        return self._write_report_characteristics()
     
     

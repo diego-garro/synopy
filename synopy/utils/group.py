@@ -34,10 +34,12 @@ class Group:
             
     
     def _verify_indicator(self, indicator, indicator_name, indicator_objetive, table, values=1):
+        indicator = int(indicator)
         if isinstance(values, list) or isinstance(values, tuple):
             if indicator not in values:
                 self.errors.append(ERRORS[4].format(indicator_name, indicator_objetive, table))
         if isinstance(values, int):
             if indicator != values:
                 self.errors.append(ERRORS[4].format(indicator_name, indicator_objetive, table))
+
             
