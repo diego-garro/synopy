@@ -17,4 +17,5 @@ for line in data:
     print("Section Two: {}".format(synoptic_report.section_two))
     print("Section Three: {}".format(synoptic_report.section_three))
     print("Section Four: {}".format(synoptic_report.section_four))
-    print(synoptic_report)
+    print("Errores seccion 1: {}".format(synoptic_report.section_one.errors))
+    print(len(synoptic_report.section_one.errors))
