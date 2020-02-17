@@ -24,7 +24,10 @@ class Group:
             pass
     
     def _extract_indicator(self, start, end):
-        return self.group[start:end]
+        if end >= 4:
+            return self.group[start:]
+        else:
+            return self.group[start:end]
     
     def _verify_group_indicator(self, indicator, value=1):
         indicator = int(indicator)
