@@ -29,6 +29,7 @@ class Synoptic:
         self.section_two = self._set_section(section_separator='222')
         self.section_three = self._set_section(section_separator='333')
         self.section_four = self._set_section(section_separator='444')
+        self._copy_errors()
     
     def _set_date(self):
         return tools.str2date(self.report[0])
@@ -62,6 +63,12 @@ class Synoptic:
                 break
             section.append(group)
         return section
+    
+    def _copy_errors(self):
+        sections = [self.section_one]
+        for section in sections:
+            for err in section.errors:
+                self.errors.append(err)
     
     def _write_report_characteristics(self):
         container = []

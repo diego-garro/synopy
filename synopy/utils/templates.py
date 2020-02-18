@@ -35,13 +35,13 @@ class Table_Indicator:
     def _set_indicator_value(self, indicator: str):
         if indicator == "/":
             self.indicator = indicator
-        elif isinstance(indicator, int):
+        elif indicator.isdigit():
             self.indicator = int(indicator)
         else:
             self.indicator = indicator
     
     def verify_indicator(self):
-        if self.indicator in self.table.keys():            
+        if self.indicator in list(self.table.keys()):
             return True
         return False
 
@@ -93,11 +93,12 @@ class Group:
             self._errors.append(ERRORS[3].format(self.name, self._group_objective))
       
     def verify_table_indicator(self, indicator):
-        if indicator.verify_indicator():
-            pass
-        else:
+        if not indicator.verify_indicator():
             #print('{}'.format(indicator.objective))
+            #cont = 0
             self._errors.append(ERRORS[4].format(indicator.name, indicator.objective, indicator.table[-2]))
+            # self._errors.append('{}'.format(cont))
+            # cont += 1
 
     def verify_value_indicator(self, indicator):
         if not indicator.verify_indicator():
