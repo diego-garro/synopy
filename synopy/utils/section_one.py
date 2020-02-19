@@ -4,23 +4,23 @@ from .templates import Group, Section, Group_Indicator, Table_Indicator, Value_I
 TABLE_1819 = {
     -2 : "Table 1819",
     -1 : "inclusion or omission of precipitacion data",
-     0 : "In sections 1 and 3, included",
-     1 : "In section 1, included",
-     2 : "In section 3, included",
-     3 : "In neither section 1 or 3, ommited (precipitation amount = 0)",
-     4 : "In neither section 1 or 3, ommited (precipitation amount not available)"
+     0 : "Precipitation data are reported: In sections 1 and 3.\nGroup 6RRRtR: Included.",
+     1 : "Precipitation data are reported: In section 1.\nGroup 6RRRtR: Included.",
+     2 : "Precipitation data are reported: In section 3.\nGroup 6RRRtR: Included.",
+     3 : "Precipitation data are reported: In neither section 1 or 3.\nGroup 6RRRtR: Ommited (precipitation amount = 0).",
+     4 : "Precipitation data are reported: In neither section 1 or 3.\nGroup 6RRRtR: Ommited (precipitation amount not available)."
 }
 
 TABLE_1860 = {
     -2 : "Table 1860",
     -1 : "type of station operation and for present and past weather data",
-     1 : "\nType of station: Manned.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Included",
-     2 : "\nType of station: Manned.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no significant phenomenon to report)",
-     3 : "\nType of station: Manned.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no observation, data not available)",
-     4 : "\nType of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Included using code tables 4677 and 4561",
-     5 : "\nType of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no significant phenomenon to report)",
-     6 : "\nType of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no observation, data not available)",
-     7 : "\nType of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Included using code tables 4680 and 4531"
+     1 : "Type of station: Manned.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Included.",
+     2 : "Type of station: Manned.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no significant phenomenon to report).",
+     3 : "Type of station: Manned.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no observation, data not available).",
+     4 : "Type of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Included using code tables 4677 and 4561.",
+     5 : "Type of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no significant phenomenon to report).",
+     6 : "Type of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Omitted (no observation, data not available).",
+     7 : "Type of station: Automatic.\nGroup 7wwW1W2 or 7wawaWa1Wa2: Included using code tables 4680 and 4531."
 }
 
 TABLE_1600 = {
@@ -70,14 +70,28 @@ class Group_iRixhVV(Group):
         self.verify_table_indicator(self._ix)
         self.verify_table_indicator(self._h)
         self.verify_table_indicator(self._VV)
+    
+    def _show_characteristics(self):
+        characteristics = ["Precipitation inclusion/exclusion / Type operation / Cloud height / Visibility Group:"]
+        characteristics.append("\n{}".format(self._iR.__str__()))
+        characteristics.append("\n{}".format(self._ix.__str__()))
+        characteristics.append("\nCloud base height: {}".format(self._h.__str__()))
+        characteristics.append("\nVisibility: {}".format(self._VV.__str__()))
+        return ''.join(characteristics)
+    
+    def __str__(self):
+        return self._show_characteristics()
 
 class Section_One(Section):
     
     def __init__(self, section: list):
         super().__init__(section)
         self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
-        self._iRixhVV.verify_indicators()
-        self.copy_group_errors(self._iRixhVV)
+        self._verify_indicator_and_copy_errors(self._iRixhVV)
+        
+    def _verify_indicator_and_copy_errors(self, indicator):
+        indicator.verify_indicators()
+        self.copy_group_errors(indicator)
     
     def __str__(self):
         return ".:SECTION ONE:.\n{}".format(self._iRixhVV)

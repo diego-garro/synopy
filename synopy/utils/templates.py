@@ -26,6 +26,8 @@ class Group_Indicator:
 
 class Table_Indicator:
     
+    valid = True
+    
     def __init__(self, indicator: str, name: str, table: dict):
         self.name = name
         self.table = table
@@ -42,10 +44,18 @@ class Table_Indicator:
     
     def verify_indicator(self):
         if self.indicator in list(self.table.keys()):
-            return True
-        return False
+            return self.valid
+        self.valid = False
+        return self.valid
+
+    def __str__(self):
+        if self.valid:
+            return self.table[self.indicator]
+        return 'Indicator {} not valid.'.format(self.name)
 
 class Value_Indicator:
+    
+    valid = True
     
     def __init__(self, indicator: str, name: str, objective: str):
         self.name = name
@@ -60,8 +70,9 @@ class Value_Indicator:
     
     def verify_indicator(self):
         if isinstance(self.indicator, float):
-            return True
-        return False
+            return self.valid
+        self.valid = False
+        return self.valid
 
 class Group:
     
@@ -86,6 +97,9 @@ class Group:
             return self.group[start:]
         else:
             return self.group[start:end]
+    
+    def _show_characteristics(self):
+        pass
     
     def verify_group_indicator(self, value=1):
         if self.group_indicator == value:
