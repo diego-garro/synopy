@@ -53,13 +53,13 @@ class Value_Indicator:
         self._set_indicator_value(indicator)
     
     def _set_indicator_value(self, indicator: str):
-        if isinstance(indicator, int):
+        if indicator.isdigit():
             self.indicator = int(indicator) / 10
         else:
             self.indicator = indicator
     
     def verify_indicator(self):
-        if isinstance(str(self.indicator), float):
+        if isinstance(self.indicator, float):
             return True
         return False
 
@@ -87,18 +87,14 @@ class Group:
         else:
             return self.group[start:end]
     
-    def verify_group_indicator(self):
-        if not self.group_indicator.verify_group_indicator:
+    def verify_group_indicator(self, value=1):
+        if self.group_indicator == value:
             self._found = False
             self._errors.append(ERRORS[3].format(self.name, self._group_objective))
       
     def verify_table_indicator(self, indicator):
         if not indicator.verify_indicator():
-            #print('{}'.format(indicator.objective))
-            #cont = 0
             self._errors.append(ERRORS[4].format(indicator.name, indicator.objective, indicator.table[-2]))
-            # self._errors.append('{}'.format(cont))
-            # cont += 1
 
     def verify_value_indicator(self, indicator):
         if not indicator.verify_indicator():
