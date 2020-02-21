@@ -82,12 +82,36 @@ class Group_iRixhVV(Group):
     def __str__(self):
         return self._show_characteristics()
 
+TABLE_2700 = {
+    -2 : "Table 2700",
+    -1 : "amount of cloud cover",
+     0 : "Cloud amount (oktas): 0",
+     1 : "Cloud amount (oktas): 1/8 or less, not zero",
+     2 : "Cloud amount (oktas): 2/8",
+     3 : "Cloud amount (oktas): 3/8",
+     4 : "Cloud amount (oktas): 4/8",
+     5 : "Cloud amount (oktas): 5/8",
+     6 : "Cloud amount (oktas): 6/8",
+     7 : "Cloud amount (oktas): 7/8 or more, but not 8/8",
+     8 : "Cloud amount (oktas): 8/8",
+     9 : "Cloud amount (oktas): Sky obscured, or cannot be estimated"
+}
+
+class Group_Nddff(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name)
+        self._N = Table_Indicator(self._extract_indicator(0, 1), "N", TABLE_2700)
+        self._dd = Value_Indicator(self._extract_indicator(1, 3), "dd", "true wind direction")
+        self._ff = Value_Indicator(self._extract_indicator(3, 5), "ff", "wind speed")
+
 class Section_One(Section):
     
     def __init__(self, section: list):
         super().__init__(section)
         self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
         self._verify_indicator_and_copy_errors(self._iRixhVV)
+        self._Nddff = Group_Nddff(self.section[1], "Nddff")
         
     def _verify_indicator_and_copy_errors(self, indicator):
         indicator.verify_indicators()
