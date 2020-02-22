@@ -72,7 +72,7 @@ class Group_iRixhVV(Group):
         self.verify_table_indicator(self._VV)
     
     def _show_characteristics(self):
-        characteristics = ["Precipitation inclusion/exclusion / Type operation / Cloud height / Visibility Group:"]
+        characteristics = [".:Precipitation inclusion/exclusion / Type operation / Cloud height / Visibility Group:."]
         characteristics.append("\n{}".format(self._iR.__str__()))
         characteristics.append("\n{}".format(self._ix.__str__()))
         characteristics.append("\nCloud base height: {}".format(self._h.__str__()))
@@ -97,27 +97,68 @@ TABLE_2700 = {
      9 : "Cloud amount (oktas): Sky obscured, or cannot be estimated"
 }
 
+TABLE_0877 = {
+    -2 : "Table 0877",
+    -1 : "true directions, in tens of degrees",
+     0 : "Calm, no motion or no waves",
+     1 : "5°-14°", 2 : "15°-24°", 3 : "25°-34°", 4 : "35°-44°", 5 : "45°-54°", 6 : "55°-64°", 7 : "65°-74°",
+     8 : "75°-84°", 9 : "85°-94°", 10 : "95°-104°", 11 : "105°-114°", 12 : "115°-124°", 13 : "125°-134°",
+     14 : "135°-144°", 15 : "145°-154°", 16 : "155°-164°", 17 : "165°-174°", 18 : "175°-184°", 19 : "185°-194°",
+     20 : "195°-204°", 21 : "205°-214°", 22 : "215°-224°", 23 : "225°-234°", 24 : "235°-244°", 25 : "245°-254°",
+     26 : "255°-264°", 27 : "265°-274°", 28 : "275°-284°", 29 : "285°-294°", 30 : "295°-304°", 31 : "305°-314°",
+     32 : "315°-324°", 33 : "325°-334°", 34 : "335°-344°", 35 : "345°-354°", 36 : "355°-4°",
+     99 : "Variable or all directions, or unknown, or waves confused, direction indeterminate"
+}
+
 class Group_Nddff(Group):
     
-    def __init__(self, group: str, name: str):
+    def __init__(self, group: str, name: str, wind_units: str):
         super().__init__(group, name)
+        self.wind_units = self._set_wind_units(wind_units)
         self._N = Table_Indicator(self._extract_indicator(0, 1), "N", TABLE_2700)
-        self._dd = Value_Indicator(self._extract_indicator(1, 3), "dd", "true wind direction")
+        self._dd = Table_Indicator(self._extract_indicator(1, 3), "dd", TABLE_0877)
         self._ff = Value_Indicator(self._extract_indicator(3, 5), "ff", "wind speed")
+    
+    def _set_wind_units(self, wind_units: str):
+        if wind_units == "0" or wind_units == "1":
+            return "meters per second"
+        elif wind_units == "3" or wind_units == "4":
+            return "knots"
+        else:
+            return "unknown"
+    
+    def verify_indicators(self):
+        self.verify_table_indicator(self._N)
+        self.verify_table_indicator(self._dd)
+        self.verify_value_indicator(self._ff)
+    
+    def _show_characteristics(self):
+        characteristics = [".:Total Cloud Cover and Wind Group:."]
+        characteristics.append("\n{}".format(self._N.__str__()))
+        characteristics.append("\nWind direction: {}".format(self._dd.__str__()))
+        if self._ff.indicator == 99:
+            characteristics.append("\nWind speed: 99 {} or more".format(self.wind_units))
+        else:
+            characteristics.append("\nWind speed: {} {}".format(self._ff.__str__(), self.wind_units))
+        return ''.join(characteristics)
+
+    def __str__(self):
+        return self._show_characteristics()
 
 class Section_One(Section):
     
-    def __init__(self, section: list):
+    def __init__(self, section: list, wind_units: str):
         super().__init__(section)
+        self.wind_units = wind_units
         self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
         self._verify_indicator_and_copy_errors(self._iRixhVV)
-        self._Nddff = Group_Nddff(self.section[1], "Nddff")
+        self._Nddff = Group_Nddff(self.section[1], "Nddff", self.wind_units)
         
     def _verify_indicator_and_copy_errors(self, indicator):
         indicator.verify_indicators()
         self.copy_group_errors(indicator)
     
     def __str__(self):
-        return ".:SECTION ONE:.\n{}".format(self._iRixhVV)
+        return ".:SECTION ONE:.\n{}\n{}".format(self._iRixhVV, self._Nddff)
         
         

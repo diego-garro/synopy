@@ -53,6 +53,17 @@ class Table_Indicator:
             return self.table[self.indicator]
         return 'Indicator {} not valid.'.format(self.name)
 
+# def validate_indicator(func):
+#     def decorate_func(variable, *args):
+#         if variable == "wind spped":
+#             data = func(variable, *args)
+#             if data == 99:
+#                 return "variable or all directions, or unknown, or waves confused, direction indeterminate"
+#             elif data <= 36:
+#                 return data * 10
+#             else:
+#                 return ""
+
 class Value_Indicator:
     
     valid = True
@@ -64,15 +75,20 @@ class Value_Indicator:
     
     def _set_indicator_value(self, indicator: str):
         if indicator.isdigit():
-            self.indicator = int(indicator) / 10
+            self.indicator = int(indicator)
         else:
             self.indicator = indicator
     
     def verify_indicator(self):
-        if isinstance(self.indicator, float):
+        if isinstance(self.indicator, int):
             return self.valid
         self.valid = False
         return self.valid
+    
+    def __str__(self):
+        if self.valid:
+            return self.indicator
+        return 'Indicator {} not valid.'.format(self.name)
 
 class Group:
     

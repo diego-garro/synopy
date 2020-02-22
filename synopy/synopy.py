@@ -24,8 +24,8 @@ class Synoptic:
         self.date = self._set_date()
         self.station_type = self._set_station_type()
         self.station_name = self._set_station_name()
-        self.wind_units = self._set_units_wind()
-        self.section_one = Section_One(self._set_section())
+        self.wind_units = self._set_wind_units()
+        self.section_one = Section_One(self._set_section(), self.report[2][-1])
         self.section_two = self._set_section(section_separator='222')
         self.section_three = self._set_section(section_separator='333')
         self.section_four = self._set_section(section_separator='444')
@@ -37,7 +37,7 @@ class Synoptic:
     def _set_station_type(self):
         return tools.STATION_TYPE[self.report[1]]
     
-    def _set_units_wind(self):
+    def _set_wind_units(self):
         indicator = "iw"
         objetive = "source and units of wind speed"
         table = "Table 1855"
