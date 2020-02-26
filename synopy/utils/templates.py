@@ -108,6 +108,8 @@ class Group:
     
     def verify_group_indicator(self, value=1):
         if self.group_indicator.verify_indicator(value=value):
+            pass
+        else:
             self.found = False
             self._errors.append(ERRORS[3].format(self.name, self._group_objective))
       
