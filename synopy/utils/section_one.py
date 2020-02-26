@@ -1,6 +1,10 @@
 
 from .templates import Group, Section, Group_Indicator, Table_Indicator, Value_Indicator
 
+ERRORS = {
+    1 : "Indicator {} for {} group, only can take 0 or 1 as value.",
+}
+
 TABLE_1819 = {
     -2 : "Table 1819",
     -1 : "inclusion or omission of precipitacion data",
@@ -160,6 +164,34 @@ class Group_00fff(Group_Nddff):
     def __str__(self):
         return "\nWind speed: {} {}".format(self._fff.indicator, self.wind_units)
 
+class Group_1snTTT(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name)
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "1")
+        self._sn = Value_Indicator(self._extract_indicator(1, 2), "sn", "sign of the temperature")
+        self._TTT = Value_Indicator(self._extract_indicator(2, 5), "TTT", "air temperature in tenths of degrees Celcius")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator()
+        self.verify_value_indicator(self._sn)
+        self.verify_value_indicator(self._TTT)
+        if self._sn.indicator > 1:
+            self._errors.append(ERRORS[1].format(self._sn.name, self.name))
+    
+    def _show_characteristics(self):
+        characteristics = [".:Air Temperature Group:."]
+        if self._sn.indicator == 0:
+            characteristics.append("\nAir temperature: {:.1f}°C".format(self._TTT.indicator / 10))
+        elif self._sn.indicator == 1:
+            characteristics.append("\nAir temperature: -{:.1f}°C".format(self._TTT.indicator / 10))
+        else:
+            characteristics.append("\nAir temperature: {:.1f}°C, sign not valid".format(self._TTT.indicator / 10))
+        return ''.join(characteristics)
+
+    def __str__(self):
+        return self._show_characteristics()
+
 class Section_One(Section):
     
     group_index = 2
@@ -185,6 +217,11 @@ class Section_One(Section):
             self._increment_group_index(self._00fff)
         else:
             self._00fff = ""
+        
+        # Group 1snTTT
+        self._1snTTT = Group_1snTTT(self.section[self.group_index], "1snTTT")
+        self._verify_indicators_and_copy_errors(self._1snTTT)
+        self._increment_group_index(self._1snTTT)
 
     def _increment_group_index(self, group):
         if group.found:
@@ -195,6 +232,9 @@ class Section_One(Section):
         self.copy_group_errors(group)
     
     def __str__(self):
-        return ".:SECTION ONE:.\n{}\n{}\n{}".format(self._iRixhVV, self._Nddff, self._00fff).replace("\n\n", "\n")
+        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}".format(self._iRixhVV,
+                                                        self._Nddff,
+                                                        self._00fff,
+                                                        self._1snTTT).replace("\n\n", "\n")
         
         
