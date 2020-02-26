@@ -118,6 +118,7 @@ class Group_Nddff(Group):
         self._N = Table_Indicator(self._extract_indicator(0, 1), "N", TABLE_2700)
         self._dd = Table_Indicator(self._extract_indicator(1, 3), "dd", TABLE_0877)
         self._ff = Value_Indicator(self._extract_indicator(3, 5), "ff", "wind speed")
+        self._save_indicators(self._N, self._dd, self._ff)
     
     def _set_wind_units(self, wind_units: str):
         if wind_units == "0" or wind_units == "1":
@@ -131,7 +132,7 @@ class Group_Nddff(Group):
         self.verify_table_indicator(self._N)
         self.verify_table_indicator(self._dd)
         self.verify_value_indicator(self._ff)
-    
+
     def _show_characteristics(self):
         characteristics = [".:Total Cloud Cover and Wind Group:."]
         characteristics.append("\n{}".format(self._N.__str__()))
@@ -145,20 +146,55 @@ class Group_Nddff(Group):
     def __str__(self):
         return self._show_characteristics()
 
+class Group_00fff(Group_Nddff):
+    
+    def __init__(self, group: str, name: str, wind_units: str):
+        super().__init__(group, name, wind_units)
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 2), "00")
+        self._fff = Value_Indicator(self._extract_indicator(2, 5), "fff", "wind speed")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=0)
+        self.verify_value_indicator(self._fff)
+    
+    def __str__(self):
+        return "\nWind speed: {} {}".format(self._fff.indicator, self.wind_units)
+
 class Section_One(Section):
+    
+    group_index = 2
     
     def __init__(self, section: list, wind_units: str):
         super().__init__(section)
         self.wind_units = wind_units
-        self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
-        self._verify_indicator_and_copy_errors(self._iRixhVV)
-        self._Nddff = Group_Nddff(self.section[1], "Nddff", self.wind_units)
         
-    def _verify_indicator_and_copy_errors(self, indicator):
-        indicator.verify_indicators()
-        self.copy_group_errors(indicator)
+        # Group iRixhVV
+        self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
+        self._verify_indicators_and_copy_errors(self._iRixhVV)
+        
+        #Group Nddff
+        self._Nddff = Group_Nddff(self.section[1], "Nddff", self.wind_units)
+        self._verify_indicators_and_copy_errors(self._Nddff)
+        self.N = self._Nddff.get_indicator("N")
+        self.ff = self._Nddff.get_indicator("ff")
+        
+        # Group 00fff
+        if self.ff == 99:
+            self._00fff = Group_00fff(self.section[self.group_index], "00fff", self.wind_units)
+            self._verify_indicators_and_copy_errors(self._00fff)
+            self._increment_group_index(self._00fff)
+        else:
+            self._00fff = ""
+
+    def _increment_group_index(self, group):
+        if group.found:
+            self.group_index += 1
+        
+    def _verify_indicators_and_copy_errors(self, group):
+        group.verify_indicators()
+        self.copy_group_errors(group)
     
     def __str__(self):
-        return ".:SECTION ONE:.\n{}\n{}".format(self._iRixhVV, self._Nddff)
+        return ".:SECTION ONE:.\n{}\n{}\n{}".format(self._iRixhVV, self._Nddff, self._00fff).replace("\n\n", "\n")
         
         

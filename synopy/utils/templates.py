@@ -14,13 +14,13 @@ class Group_Indicator:
         self._set_indicator_value(indicator)
     
     def _set_indicator_value(self, indicator: str):
-        if isinstance(indicator, int):
-            self.group_indicator = int(indicator)
+        if indicator.isdigit():
+            self.value = int(indicator)
         else:
-            self.group_indicator = indicator
+            self.value = indicator
     
-    def verify_group_indicator(self, value=1):
-        if self.group_indicator != value:
+    def verify_indicator(self, value=1):
+        if self.value != value:
             return False
         return True
 
@@ -53,17 +53,6 @@ class Table_Indicator:
             return self.table[self.indicator]
         return 'Indicator {} not valid.'.format(self.name)
 
-# def validate_indicator(func):
-#     def decorate_func(variable, *args):
-#         if variable == "wind spped":
-#             data = func(variable, *args)
-#             if data == 99:
-#                 return "variable or all directions, or unknown, or waves confused, direction indeterminate"
-#             elif data <= 36:
-#                 return data * 10
-#             else:
-#                 return ""
-
 class Value_Indicator:
     
     valid = True
@@ -93,9 +82,9 @@ class Value_Indicator:
 class Group:
     
     _errors = []
-    _found = True
     _group_objective = ''
     group_indicator = None
+    found = True
     
     def __init__(self, group: str, name: str):
         self.group = group
@@ -115,11 +104,11 @@ class Group:
             return self.group[start:end]
     
     def _show_characteristics(self):
-        pass
+        return ""
     
     def verify_group_indicator(self, value=1):
-        if self.group_indicator == value:
-            self._found = False
+        if self.group_indicator.verify_indicator(value=value):
+            self.found = False
             self._errors.append(ERRORS[3].format(self.name, self._group_objective))
       
     def verify_table_indicator(self, indicator):
@@ -129,6 +118,17 @@ class Group:
     def verify_value_indicator(self, indicator):
         if not indicator.verify_indicator():
             self._errors.append(ERRORS[5].format(indicator.name, indicator.objective))
+    
+    def _save_indicators(self, *args):
+        self._indicators = []
+        for ind in args:
+            self._indicators.append(ind)
+    
+    def get_indicator(self, indicator_name: str):
+        for ind in self._indicators:
+            if ind.name == indicator_name:
+                return ind.indicator
+        raise ValueError("No indicators found with name {}".format(indicator_name))
     
     def errors(self):
         return self._errors
