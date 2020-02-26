@@ -154,10 +154,7 @@ class Group_00fff(Group_Nddff):
         self._fff = Value_Indicator(self._extract_indicator(2, 5), "fff", "wind speed")
     
     def verify_indicators(self):
-        print("Se encontró el grupo 00fff: {}".format(self.found))
         self.verify_group_indicator(value=0)
-        print("Indicador 00: {}, tipo: {}".format(self.group_indicator.value, type(self.group_indicator.value)))
-        print("Se encontró el grupo 00fff: {}".format(self.found))
         self.verify_value_indicator(self._fff)
     
     def __str__(self):

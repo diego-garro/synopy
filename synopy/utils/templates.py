@@ -122,9 +122,7 @@ class Group:
             self._errors.append(ERRORS[5].format(indicator.name, indicator.objective))
     
     def _save_indicators(self, *args):
-        self._indicators = []
-        for ind in args:
-            self._indicators.append(ind)
+        self._indicators = [ind for ind in args]
     
     def get_indicator(self, indicator_name: str):
         for ind in self._indicators:
