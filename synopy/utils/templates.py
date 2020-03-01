@@ -86,9 +86,10 @@ class Group:
     group_indicator = None
     found = True
     
-    def __init__(self, group: str, name: str):
+    def __init__(self, group: str, name: str, objective: str):
         self.group = group
         self.name = name
+        self._group_objective = objective
         self.length = len(group)
         if self.length > 5:
             self._errors.append(ERRORS[1].format(self.name))

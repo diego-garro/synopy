@@ -63,7 +63,7 @@ TABLE_4377 = {
 class Group_iRixhVV(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name)
+        super().__init__(group, name, "Precipitation inclusion/exclusion / Type operation / Cloud height / Visibility Group")
         self._iR = Table_Indicator(self._extract_indicator(0, 1), "iR", TABLE_1819)
         self._ix = Table_Indicator(self._extract_indicator(1, 2), "ix", TABLE_1860)
         self._h = Table_Indicator(self._extract_indicator(2, 3), "h", TABLE_1600)
@@ -76,7 +76,7 @@ class Group_iRixhVV(Group):
         self.verify_table_indicator(self._VV)
     
     def _show_characteristics(self):
-        characteristics = [".:Precipitation inclusion/exclusion / Type operation / Cloud height / Visibility Group:."]
+        characteristics = [".:{}:.".format(self._group_objective)]
         characteristics.append("\n{}".format(self._iR.__str__()))
         characteristics.append("\n{}".format(self._ix.__str__()))
         characteristics.append("\nCloud base height: {}".format(self._h.__str__()))
@@ -117,7 +117,7 @@ TABLE_0877 = {
 class Group_Nddff(Group):
     
     def __init__(self, group: str, name: str, wind_units: str):
-        super().__init__(group, name)
+        super().__init__(group, name, "Total Cloud Cover and Wind Group")
         self.wind_units = self._set_wind_units(wind_units)
         self._N = Table_Indicator(self._extract_indicator(0, 1), "N", TABLE_2700)
         self._dd = Table_Indicator(self._extract_indicator(1, 3), "dd", TABLE_0877)
@@ -138,7 +138,7 @@ class Group_Nddff(Group):
         self.verify_value_indicator(self._ff)
 
     def _show_characteristics(self):
-        characteristics = [".:Total Cloud Cover and Wind Group:."]
+        characteristics = [".:{}:.".format(self._group_objective)]
         characteristics.append("\n{}".format(self._N.__str__()))
         characteristics.append("\nWind direction: {}".format(self._dd.__str__()))
         if self._ff.indicator == 99:
@@ -154,6 +154,7 @@ class Group_00fff(Group_Nddff):
     
     def __init__(self, group: str, name: str, wind_units: str):
         super().__init__(group, name, wind_units)
+        self._group_objective = "Dew Point Temperature Group"
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 2), "00")
         self._fff = Value_Indicator(self._extract_indicator(2, 5), "fff", "wind speed")
     
@@ -167,7 +168,7 @@ class Group_00fff(Group_Nddff):
 class Group_1snTTT(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name)
+        super().__init__(group, name, "Air Temperature Group")
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "1")
         self._sn = Value_Indicator(self._extract_indicator(1, 2), "sn", "sign of the temperature")
         self._TTT = Value_Indicator(self._extract_indicator(2, 5), "TTT", "air temperature in tenths of degrees Celcius")
@@ -180,13 +181,41 @@ class Group_1snTTT(Group):
             self._errors.append(ERRORS[1].format(self._sn.name, self.name))
     
     def _show_characteristics(self):
-        characteristics = [".:Air Temperature Group:."]
+        characteristics = [".:{}:.".format(self._group_objective)]
         if self._sn.indicator == 0:
             characteristics.append("\nAir temperature: {:.1f}°C".format(self._TTT.indicator / 10))
         elif self._sn.indicator == 1:
             characteristics.append("\nAir temperature: -{:.1f}°C".format(self._TTT.indicator / 10))
         else:
             characteristics.append("\nAir temperature: {:.1f}°C, sign not valid".format(self._TTT.indicator / 10))
+        return ''.join(characteristics)
+
+    def __str__(self):
+        return self._show_characteristics()
+
+class Group_2snTdTdTd(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Dew Point Temperature Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "2")
+        self._sn = Value_Indicator(self._extract_indicator(1, 2), "sn", "sign of the dew point temperature")
+        self._TdTdTd = Value_Indicator(self._extract_indicator(2, 5), "TdTdTd", "dew point temperature in tenths of degrees Celcius")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=2)
+        self.verify_value_indicator(self._sn)
+        self.verify_value_indicator(self._TdTdTd)
+        if self._sn.indicator > 1:
+            self._errors.append(ERRORS[1].format(self._sn.name, self.name))
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        if self._sn.indicator == 0:
+            characteristics.append("\nDew Point temperature: {:.1f}°C".format(self._TdTdTd.indicator / 10))
+        elif self._sn.indicator == 1:
+            characteristics.append("\nDew Point temperature: -{:.1f}°C".format(self._TdTdTd.indicator / 10))
+        else:
+            characteristics.append("\nDew Point temperature: {:.1f}°C, sign not valid".format(self._TdTdTd.indicator / 10))
         return ''.join(characteristics)
 
     def __str__(self):
@@ -222,6 +251,11 @@ class Section_One(Section):
         self._1snTTT = Group_1snTTT(self.section[self.group_index], "1snTTT")
         self._verify_indicators_and_copy_errors(self._1snTTT)
         self._increment_group_index(self._1snTTT)
+    
+        # Group 2snTdTdTd
+        self._2snTdTdTd = Group_2snTdTdTd(self.section[self.group_index], "2snTdTdTd")
+        self._verify_indicators_and_copy_errors(self._2snTdTdTd)
+        self._increment_group_index(self._2snTdTdTd)
 
     def _increment_group_index(self, group):
         if group.found:
@@ -232,9 +266,10 @@ class Section_One(Section):
         self.copy_group_errors(group)
     
     def __str__(self):
-        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}".format(self._iRixhVV,
-                                                        self._Nddff,
-                                                        self._00fff,
-                                                        self._1snTTT).replace("\n\n", "\n")
+        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}".format(self._iRixhVV,
+                                                            self._Nddff,
+                                                            self._00fff,
+                                                            self._1snTTT,
+                                                            self._2snTdTdTd).replace("\n\n", "\n")
         
         
