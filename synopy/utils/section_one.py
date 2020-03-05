@@ -68,6 +68,7 @@ class Group_iRixhVV(Group):
         self._ix = Table_Indicator(self._extract_indicator(1, 2), "ix", TABLE_1860)
         self._h = Table_Indicator(self._extract_indicator(2, 3), "h", TABLE_1600)
         self._VV = Table_Indicator(self._extract_indicator(3, 5), "VV", TABLE_4377)
+        self._save_indicators(self._iR)
     
     def verify_indicators(self):
         self.verify_table_indicator(self._iR)
@@ -221,6 +222,50 @@ class Group_2snTdTdTd(Group):
     def __str__(self):
         return self._show_characteristics()
 
+class Group_3PoPoPoPo(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Station Pressure Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "3")
+        self._PoPoPoPo = Value_Indicator(self._extract_indicator(1, 5), "PoPoPoPo", "pressure at station level, in tenths of a hectopascal")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=3)
+        self.verify_value_indicator(self._PoPoPoPo)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        if self._PoPoPoPo.indicator < 150:
+            characteristics.append("\nPressure at station level: {:.1f} hPa".format(self._PoPoPoPo.indicator / 10 + 1000))
+        else:
+            characteristics.append("\nPressure at station level: {:.1f} hPa".format(self._PoPoPoPo.indicator / 10))
+        return ''.join(characteristics)
+
+    def __str__(self):
+        return self._show_characteristics()
+
+class Group_4PPPP(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Sea Level Pressure Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "4")
+        self._PPPP = Value_Indicator(self._extract_indicator(1, 5), "PPPP", "sea level pressure, in tenths of a hectopascal")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=4)
+        self.verify_value_indicator(self._PPPP)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        if self._PPPP.indicator < 150:
+            characteristics.append("\nSea level pressure: {:.1f} hPa".format(self._PPPP.indicator / 10 + 1000))
+        else:
+            characteristics.append("\nSea level pressure: {:.1f} hPa".format(self._PPPP.indicator / 10))
+        return ''.join(characteristics)
+    
+    def __str__(self):
+        return self._show_characteristics()
+
 class Section_One(Section):
     
     group_index = 2
@@ -232,6 +277,7 @@ class Section_One(Section):
         # Group iRixhVV
         self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
         self._verify_indicators_and_copy_errors(self._iRixhVV)
+        self.iR = self._iRixhVV.get_indicator("iR")
         
         #Group Nddff
         self._Nddff = Group_Nddff(self.section[1], "Nddff", self.wind_units)
@@ -256,6 +302,16 @@ class Section_One(Section):
         self._2snTdTdTd = Group_2snTdTdTd(self.section[self.group_index], "2snTdTdTd")
         self._verify_indicators_and_copy_errors(self._2snTdTdTd)
         self._increment_group_index(self._2snTdTdTd)
+        
+        # Group 3PoPoPoPo
+        self._3PoPoPoPo = Group_3PoPoPoPo(self.section[self.group_index], "3PoPoPoPo")
+        self._verify_indicators_and_copy_errors(self._3PoPoPoPo)
+        self._increment_group_index(self._3PoPoPoPo)
+        
+        # Group 4PPPP
+        self._4PPPP = Group_4PPPP(self.section[self.group_index], "4PPPP")
+        self._verify_indicators_and_copy_errors(self._4PPPP)
+        self._increment_group_index(self._4PPPP)
 
     def _increment_group_index(self, group):
         if group.found:
@@ -266,10 +322,12 @@ class Section_One(Section):
         self.copy_group_errors(group)
     
     def __str__(self):
-        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}".format(self._iRixhVV,
-                                                            self._Nddff,
-                                                            self._00fff,
-                                                            self._1snTTT,
-                                                            self._2snTdTdTd).replace("\n\n", "\n")
+        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(self._iRixhVV,
+                                                                    self._Nddff,
+                                                                    self._00fff,
+                                                                    self._1snTTT,
+                                                                    self._2snTdTdTd,
+                                                                    self._3PoPoPoPo,
+                                                                    self._4PPPP).replace("\n\n", "\n")
         
         
