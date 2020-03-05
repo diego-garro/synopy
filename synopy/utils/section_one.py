@@ -266,6 +266,42 @@ class Group_4PPPP(Group):
     def __str__(self):
         return self._show_characteristics()
 
+TABLE_0200 = {
+    -2 : "Table 0200",
+    -1 : "characteristics of pressure tendency",
+     0 : "Increasing, then decreasing; atmospheric pressure the same or higher tha 3 hours ago",
+     1 : "Increasing, then steady; or increasing, then increasing more slowly",
+     2 : "Increasing (stadily or unsteadily)",
+     3 : "Dedreasing or steady, then increasing; or increasing, then increasing more rapidly",
+     4 : "Steady, the atmospheric pressure the same than 3 hours ago",
+     5 : "Decreasing, then increasing; atmospheric pressure the same or lower than 3 hours ago",
+     6 : "Decreasing, then steady; or decreasing, then decreasing more slowly",
+     7 : "Decreasing (steadily or unsteadily)",
+     8 : "Steady or incresing, then decreasing; or decreasing, then decreasing more rapidly"
+}
+
+class Group_5appp(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "3-Hour Pressure Tendency Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "5")
+        self._a = Table_Indicator(self._extract_indicator(1, 2), "a", TABLE_0200)
+        self._ppp = Value_Indicator(self._extract_indicator(2, 5), "ppp", "actual change in the pressure")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=5)
+        self.verify_table_indicator(self._a)
+        self.verify_value_indicator(self._ppp)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\n{}: {}".format(TABLE_0200[-1].capitalize(), self._a.__str__()))
+        characteristics.append("\nChange: {:.1f}".format(self._ppp.indicator / 10))
+        return ''.join(characteristics)
+
+    def __str__(self):
+        return self._show_characteristics()
+
 class Section_One(Section):
     
     group_index = 2
@@ -312,6 +348,11 @@ class Section_One(Section):
         self._4PPPP = Group_4PPPP(self.section[self.group_index], "4PPPP")
         self._verify_indicators_and_copy_errors(self._4PPPP)
         self._increment_group_index(self._4PPPP)
+        
+        # Group 5appp
+        self._5appp = Group_5appp(self.section[self.group_index], "5appp")
+        self._verify_indicators_and_copy_errors(self._5appp)
+        self._increment_group_index(self._5appp)
 
     def _increment_group_index(self, group):
         if group.found:
@@ -322,12 +363,13 @@ class Section_One(Section):
         self.copy_group_errors(group)
     
     def __str__(self):
-        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(self._iRixhVV,
-                                                                    self._Nddff,
-                                                                    self._00fff,
-                                                                    self._1snTTT,
-                                                                    self._2snTdTdTd,
-                                                                    self._3PoPoPoPo,
-                                                                    self._4PPPP).replace("\n\n", "\n")
+        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(self._iRixhVV,
+                                                                        self._Nddff,
+                                                                        self._00fff,
+                                                                        self._1snTTT,
+                                                                        self._2snTdTdTd,
+                                                                        self._3PoPoPoPo,
+                                                                        self._4PPPP,
+                                                                        self._5appp).replace("\n\n", "\n")
         
         
