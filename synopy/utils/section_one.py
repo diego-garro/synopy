@@ -296,7 +296,10 @@ class Group_5appp(Group):
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
         characteristics.append("\n{}: {}".format(TABLE_0200[-1].capitalize(), self._a.__str__()))
-        characteristics.append("\nChange: {:.1f}".format(self._ppp.indicator / 10))
+        if self._a.indicator > 4:
+            characteristics.append("\nChange: -{:.1f}".format(self._ppp.indicator / 10))
+        else:
+            characteristics.append("\nChange: {:.1f}".format(self._ppp.indicator / 10))
         return ''.join(characteristics)
 
     def __str__(self):
