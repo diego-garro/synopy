@@ -81,7 +81,6 @@ class Value_Indicator:
 
 class Group:
     
-    _errors = []
     _group_objective = ''
     group_indicator = None
     found = True
@@ -89,6 +88,7 @@ class Group:
     def __init__(self, group: str, name: str, objective: str):
         self.group = group
         self.name = name
+        self._errors = []
         self._group_objective = objective
         self.length = len(group)
         if self.length > 5:
@@ -99,7 +99,7 @@ class Group:
             pass
     
     def _extract_indicator(self, start, end):
-        if end >= 4:
+        if end > 4:
             return self.group[start:]
         else:
             return self.group[start:end]
@@ -135,17 +135,29 @@ class Group:
         return self._errors
     
     def __str__(self):
-        return "Group name: {}.".format(self.name)
+        return self._show_characteristics()
 
 class Section:
     
-    errors = []
-    
     def __init__(self, section: list):
         self.section = section
+        self._groups = []
+        self.errors = []
         self.length = len(section)
     
     def copy_group_errors(self, group):
         for error in group.errors():
             self.errors.append(error)
+    
+    def _include_group_to_groups(self, group):
+        self._groups.append(group)
+    
+    def _show_characteristics(self):
+        message = ""
+        for group in self._groups:
+            message += "\n{}".format(group)
+        return message
+    
+    def __str__(self):
+        return self._show_characteristics()
         

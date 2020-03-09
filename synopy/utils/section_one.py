@@ -3,6 +3,9 @@ from .templates import Group, Section, Group_Indicator, Table_Indicator, Value_I
 
 ERRORS = {
     1 : "Indicator {} for {} group, only can take 0 or 1 as value.",
+    2 : "Indicator {} for {} can't be 000.",
+    3 : "Indicator {} indicates precipitation data will be included, but group {} not included.",
+    4 : "Indicator {} indicates not precipitation data will be included, but group {} included.",
 }
 
 TABLE_1819 = {
@@ -83,9 +86,6 @@ class Group_iRixhVV(Group):
         characteristics.append("\nCloud base height: {}".format(self._h.__str__()))
         characteristics.append("\nVisibility: {}".format(self._VV.__str__()))
         return ''.join(characteristics)
-    
-    def __str__(self):
-        return self._show_characteristics()
 
 TABLE_2700 = {
     -2 : "Table 2700",
@@ -148,9 +148,6 @@ class Group_Nddff(Group):
             characteristics.append("\nWind speed: {} {}".format(self._ff.__str__(), self.wind_units))
         return ''.join(characteristics)
 
-    def __str__(self):
-        return self._show_characteristics()
-
 class Group_00fff(Group_Nddff):
     
     def __init__(self, group: str, name: str, wind_units: str):
@@ -163,7 +160,7 @@ class Group_00fff(Group_Nddff):
         self.verify_group_indicator(value=0)
         self.verify_value_indicator(self._fff)
     
-    def __str__(self):
+    def _show_characteristics(self):
         return "\nWind speed: {} {}".format(self._fff.indicator, self.wind_units)
 
 class Group_1snTTT(Group):
@@ -191,9 +188,6 @@ class Group_1snTTT(Group):
             characteristics.append("\nAir temperature: {:.1f}°C, sign not valid".format(self._TTT.indicator / 10))
         return ''.join(characteristics)
 
-    def __str__(self):
-        return self._show_characteristics()
-
 class Group_2snTdTdTd(Group):
     
     def __init__(self, group: str, name: str):
@@ -219,9 +213,6 @@ class Group_2snTdTdTd(Group):
             characteristics.append("\nDew Point temperature: {:.1f}°C, sign not valid".format(self._TdTdTd.indicator / 10))
         return ''.join(characteristics)
 
-    def __str__(self):
-        return self._show_characteristics()
-
 class Group_3PoPoPoPo(Group):
     
     def __init__(self, group: str, name: str):
@@ -241,9 +232,6 @@ class Group_3PoPoPoPo(Group):
             characteristics.append("\nPressure at station level: {:.1f} hPa".format(self._PoPoPoPo.indicator / 10))
         return ''.join(characteristics)
 
-    def __str__(self):
-        return self._show_characteristics()
-
 class Group_4PPPP(Group):
     
     def __init__(self, group: str, name: str):
@@ -262,9 +250,6 @@ class Group_4PPPP(Group):
         else:
             characteristics.append("\nSea level pressure: {:.1f} hPa".format(self._PPPP.indicator / 10))
         return ''.join(characteristics)
-    
-    def __str__(self):
-        return self._show_characteristics()
 
 TABLE_0200 = {
     -2 : "Table 0200",
@@ -302,8 +287,45 @@ class Group_5appp(Group):
             characteristics.append("\nChange: {:.1f}".format(self._ppp.indicator / 10))
         return ''.join(characteristics)
 
-    def __str__(self):
-        return self._show_characteristics()
+TABLE_4019 = {
+    -2 : "Table 4019",
+    -1 : "duration of period of precipitation",
+     1 : "6 hours preceding time of observation",
+     2 : "12 hours preceding time of observation",
+     3 : "18 hours preceding time of observation",
+     4 : "24 hours preceding time of observation",
+     5 : "1 hour preceding time of observation",
+     6 : "2 hours preceding time of observation",
+     7 : "3 hours preceding time of observation",
+     8 : "9 hours preceding time of observation",
+     9 : "15 hours preceding time of observation",
+}
+
+class Group_6RRRtR(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Amount of Precipitation Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "6")
+        self._RRR = Value_Indicator(self._extract_indicator(1, 4), "RRR",
+                                    "total amount of precipitation fallen during the period preceding the observation")
+        self._tR = Table_Indicator(self._extract_indicator(4, 5), "tR", TABLE_4019)
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=6)
+        self.verify_value_indicator(self._RRR)
+        if self._RRR.indicator == 0:
+            self._errors.append(ERRORS[2].format(self._RRR.name, self._RRR.objective))
+        self.verify_table_indicator(self._tR)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        if self._RRR.indicator < 990:
+            characteristics.append("\nAmount of precipitation: {} mm, {}".format(self._RRR.indicator, self._tR.__str__()))
+        elif self._RRR.indicator > 990:
+            characteristics.append("\nAmount of precipitation: {:.1f} mm, {}".format((self._RRR.indicator - 990) / 10, self._tR.__str__()))
+        else:
+            characteristics.append("\nAmount of precipitation: Trace, {}".format(self._tR.__str__()))
+        return ''.join(characteristics)
 
 class Section_One(Section):
     
@@ -356,23 +378,32 @@ class Section_One(Section):
         self._5appp = Group_5appp(self.section[self.group_index], "5appp")
         self._verify_indicators_and_copy_errors(self._5appp)
         self._increment_group_index(self._5appp)
+        
+        # Group 6RRRtR
+        try:
+            self._6RRRtR = Group_6RRRtR(self.section[self.group_index], "6RRRtR")
+            self._verify_indicators_and_copy_errors(self._6RRRtR)
+            self._increment_group_index(self._6RRRtR)
+            if self.iR < 3 and not self._6RRRtR.found:
+                self.errors.append(ERRORS[3].format("iR", self._6RRRtR.name))
+            elif self.iR >= 3 and self._6RRRtR.found:
+                self.errors.append(ERRORS[4].format("iR", self._6RRRtR.name))
+            else:
+                pass
+        except IndexError:
+            if self.iR < 3:
+                self.errors.append(ERRORS[3].format("iR", "6RRRtR"))
 
     def _increment_group_index(self, group):
         if group.found:
+            self._include_group_to_groups(group)
             self.group_index += 1
         
     def _verify_indicators_and_copy_errors(self, group):
         group.verify_indicators()
         self.copy_group_errors(group)
     
-    def __str__(self):
-        return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(self._iRixhVV,
-                                                                        self._Nddff,
-                                                                        self._00fff,
-                                                                        self._1snTTT,
-                                                                        self._2snTdTdTd,
-                                                                        self._3PoPoPoPo,
-                                                                        self._4PPPP,
-                                                                        self._5appp).replace("\n\n", "\n")
+    # def __str__(self):
+    #     return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(x for x in self._groups).replace("\n\n", "\n")
         
         

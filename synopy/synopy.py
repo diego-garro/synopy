@@ -9,8 +9,7 @@ ERRORS = {
 }
 
 class Synoptic:
-    
-    errors = []
+
     _sections = [
         '222',
         '333',
@@ -22,6 +21,7 @@ class Synoptic:
     def __init__(self, report: str):
         self.report = report.replace('\n', '').split(' ')
         self.date = self._set_date()
+        self.errors = []
         self.station_type = self._set_station_type()
         self.station_name = self._set_station_name()
         self.wind_units = self._set_wind_units()
