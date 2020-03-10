@@ -173,10 +173,11 @@ class Group_1snTTT(Group):
     
     def verify_indicators(self):
         self.verify_group_indicator()
-        self.verify_value_indicator(self._sn)
-        self.verify_value_indicator(self._TTT)
-        if self._sn.indicator > 1:
-            self._errors.append(ERRORS[1].format(self._sn.name, self.name))
+        if self.found:
+            self.verify_value_indicator(self._sn)
+            self.verify_value_indicator(self._TTT)
+            if self._sn.indicator > 1:
+                self._errors.append(ERRORS[1].format(self._sn.name, self.name))
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
@@ -198,10 +199,11 @@ class Group_2snTdTdTd(Group):
     
     def verify_indicators(self):
         self.verify_group_indicator(value=2)
-        self.verify_value_indicator(self._sn)
-        self.verify_value_indicator(self._TdTdTd)
-        if self._sn.indicator > 1:
-            self._errors.append(ERRORS[1].format(self._sn.name, self.name))
+        if self.found:
+            self.verify_value_indicator(self._sn)
+            self.verify_value_indicator(self._TdTdTd)
+            if self._sn.indicator > 1:
+                self._errors.append(ERRORS[1].format(self._sn.name, self.name))
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
@@ -222,7 +224,8 @@ class Group_3PoPoPoPo(Group):
     
     def verify_indicators(self):
         self.verify_group_indicator(value=3)
-        self.verify_value_indicator(self._PoPoPoPo)
+        if self.found:
+            self.verify_value_indicator(self._PoPoPoPo)
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
@@ -241,7 +244,8 @@ class Group_4PPPP(Group):
     
     def verify_indicators(self):
         self.verify_group_indicator(value=4)
-        self.verify_value_indicator(self._PPPP)
+        if self.found:
+            self.verify_value_indicator(self._PPPP)
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
@@ -275,8 +279,9 @@ class Group_5appp(Group):
     
     def verify_indicators(self):
         self.verify_group_indicator(value=5)
-        self.verify_table_indicator(self._a)
-        self.verify_value_indicator(self._ppp)
+        if self.found:
+            self.verify_table_indicator(self._a)
+            self.verify_value_indicator(self._ppp)
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
@@ -304,7 +309,7 @@ TABLE_4019 = {
 class Group_6RRRtR(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Amount of Precipitation Group")
+        super().__init__(group, name, "Amount of Precipitation Group", requared=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "6")
         self._RRR = Value_Indicator(self._extract_indicator(1, 4), "RRR",
                                     "total amount of precipitation fallen during the period preceding the observation")
@@ -312,10 +317,11 @@ class Group_6RRRtR(Group):
     
     def verify_indicators(self):
         self.verify_group_indicator(value=6)
-        self.verify_value_indicator(self._RRR)
-        if self._RRR.indicator == 0:
-            self._errors.append(ERRORS[2].format(self._RRR.name, self._RRR.objective))
-        self.verify_table_indicator(self._tR)
+        if self.found:
+            self.verify_value_indicator(self._RRR)
+            if self._RRR.indicator == 0:
+                self._errors.append(ERRORS[2].format(self._RRR.name, self._RRR.objective))
+            self.verify_table_indicator(self._tR)
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]

@@ -85,11 +85,12 @@ class Group:
     group_indicator = None
     found = True
     
-    def __init__(self, group: str, name: str, objective: str):
+    def __init__(self, group: str, name: str, objective: str, requared=True):
         self.group = group
         self.name = name
         self._errors = []
         self._group_objective = objective
+        self.requared = requared
         self.length = len(group)
         if self.length > 5:
             self._errors.append(ERRORS[1].format(self.name))
@@ -112,7 +113,8 @@ class Group:
             pass
         else:
             self.found = False
-            self._errors.append(ERRORS[3].format(self.name, self._group_objective))
+            if self.requared:
+                self._errors.append(ERRORS[3].format(self.name, self._group_objective))
       
     def verify_table_indicator(self, indicator):
         if not indicator.verify_indicator():
