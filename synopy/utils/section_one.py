@@ -495,16 +495,13 @@ the oberver""",
 {COMMON_TABLE_4677[91]}""",
     94 : f"""Moderate or heavy snow, or rain and snow mixed or hail at time of observation,
 {COMMON_TABLE_4677[91]}""",
-    95 : f"""Thunderstorm, slight or moderate, without hail, but with rain and/or snow at
-time of observation, {COMMON_TABLE_4677[95]}""",
-    96 : f"""Thunderstorm, slight or moderate, with hail at time ob observation,
-{COMMON_TABLE_4677[95]}""",
-    97 : f"""Thunderstorm, heavy, without hail, but with rain and/or snow at time of
-observation, {COMMON_TABLE_4677[95]}""",
-    98 : f"""Thunderstorm combined with duststorm or sandstorm at time of observation
-{COMMON_TABLE_4677[95]}""",
-    99 : f"""Thunderstorm, heavy, with hail at time of observation
-{COMMON_TABLE_4677[95]}"""
+    95 : """Thunderstorm, slight or moderate, without hail, but with rain and/or snow at
+time of observation""",
+    96 : "Thunderstorm, slight or moderate, with hail at time ob observation",
+    97 : """Thunderstorm, heavy, without hail, but with rain and/or snow at time of
+observation""",
+    98 : "Thunderstorm combined with duststorm or sandstorm at time of observation",
+    99 : "Thunderstorm, heavy, with hail at time of observation"
 }
 
 class Section_One(Section):
