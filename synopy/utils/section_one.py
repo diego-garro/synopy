@@ -333,6 +333,180 @@ class Group_6RRRtR(Group):
             characteristics.append("\nAmount of precipitation: Trace, {}".format(self._tR.__str__()))
         return ''.join(characteristics)
 
+TABLE_4561 = {
+    -2 : "Table 4561",
+    -1 : "past weather",
+     0 : "Cloud covering 1/2 or less of the sky throughout the appropriate period",
+     1 : "Cloud covering more than 1/2 of the sky during part of the appropriate period and covering 1/2 or less during part of the period",
+     2 : "Cloud covering more than 1/2 of the sky throughout the appropriate period",
+     3 : "Sandstorm, duststorm, or blowing snow",
+     4 : "Fog or ice fog or thick haze",
+     5 : "Drizzle",
+     6 : "Rain",
+     7 : "Snow, or rain and snow mixed",
+     8 : "Shower(s)",
+     9 : "Thunderstorm(s) with or without precipitation"
+}
+
+COMMON_TABLE_4677 = {
+    10 : """shallow fog or ice fog at the station, whether on land or sea, not deeper
+than about  2 meters on land or 10 meters at sea""",
+    18 : """at or within sight of the station during the preceding hour or at the time
+of obervation""",
+    20 : "not falling as shower(s)",
+    30 : "Slight or moderate duststorm or sandstorm",
+    33 : "Severe duststorm or sandstorm",
+    36 : "generally low (below eye level)",
+    38 : "generally high (above eye level)",
+    42 : "Fog or ice fog, sky visible",
+    43 : "Fog or ice fog, sky invisible",
+    50 : "Drizzle, not freezing, intermittent",
+    51 : "Drizzle, not freezing, continuous",
+    60 : "Rain, not freezing, intermittent",
+    61 : "Rain, not freezing, continuous",
+    70 : "Intermittent fall or snowflakes",
+    71 : "Continuous fall of snowflakes",
+    87 : "Shower(s) of snow pellets or small hail, with or without rain or rain and snow mixed",
+    89 : "Shower(s) of hail, with or without rain or rain and snow mixed, not associate with thunder",
+    91 : "thunderstorm during the preceding hour but not at time of observation",
+    95 : "thunderstorm at time of observation"
+}
+
+TABLE_4677 = {
+    # ww = 00 - 49 No precipitation at the station at the time of observation
+    # ww = 00 - 19 No precipitation, fog, ice fog (except for 11 and 12), duststorm, sandstorm, drifting
+    #              or blowing snow at the station at the time of observation or, except for 09 and 17,
+    #              during the preceding hour.
+    -2 : "Table 4677",
+    -1 : "present wheather reported from a manned weather station",
+     0 : "Cloud development not observed or not observable",
+     1 : "Clouds generally dissolving or becoming less developed",
+     2 : "State of the sky on the whole unchanged",
+     3 : "Clouds generally forming or developing",
+     4 : """Visibility reduced by smoke, e. g. veldt or forest fires, industrial smokes or
+volcanic ashes""",
+     5 : "Haze",
+     6 : """Widespread dust in suspension in the air, not raised by wind at or near the
+station at the time of observation""",
+     7 : """Dust or sand raised by wind at or near the station at the time of observation,
+but no well-developed dust whirl(s) or sand whirl(s), and no duststorm or
+sandstorm seen; or, in the case of ships, blowing spray at the station""",
+     8 : """Well-developed dust whirl(s) or sand whirl(s) seen at or near the station
+during the preceding hour or at the time of observation, but no duststorm or sandstorm""",
+     9 : """Duststorm or sandstorm within sight at the time of obervation, or at the
+station during the preceding hour""",
+    10 : f"Mist {COMMON_TABLE_4677[10]}",
+    11 : f"Patches {COMMON_TABLE_4677[10]}",
+    12 : f"More or less continuous {COMMON_TABLE_4677[10]}",
+    13 : "Lightning visible, no thunder heard",
+    14 : "Precipitation within sight, not reaching the ground or surface of the sea",
+    15 : """Precipitation within sight, reaching the ground or the surface of the sea, but
+distant, i.e. estimated to be more than 5 km from the station""",
+    16 : """Precipitation within sight, reaching the ground or the surface of the sea, near to,
+but not at the station""",
+    17 : "Thunderstorm, but no precipitation at the time of observation",
+    18 : f"Squalls {COMMON_TABLE_4677[18]}",
+    19 : f"Funnel cloud(s), tornado cloud or {COMMON_TABLE_4677[18]}",
+    # ww = 20 - 29 Precipitation, fog, ice fog or thinderstorm at the station during the preceding hour
+    #              but not at the time of observation
+    20 : f"Drizzle (not freezing)vor snow grains {COMMON_TABLE_4677[20]}",
+    21 : f"Rain (not freezing {COMMON_TABLE_4677[20]}",
+    22 : f"Snow {COMMON_TABLE_4677[20]}",
+    23 : f"Rain and snow or ice pellets {COMMON_TABLE_4677[20]}",
+    24 : f"Freezing drizzle or freezing rain {COMMON_TABLE_4677[20]}",
+    25 : f"Shower(s) of rain {COMMON_TABLE_4677[20]}",
+    26 : f"Shower(s) of snow, or of rain and snow {COMMON_TABLE_4677[20]}",
+    27 : f"Shower(s) of hail, or of rain and hail {COMMON_TABLE_4677[20]}",
+    28 : f"Fog or ice fog {COMMON_TABLE_4677[20]}",
+    29 : f"Thunderstorm (with or without precipitation) {COMMON_TABLE_4677[20]}",
+    # ww = 30 - 39 Duststorm, sandstorm, drifting or blowing snow
+    30 : f"{COMMON_TABLE_4677[30]} has decreased during the time preceding hour",
+    31 : f"{COMMON_TABLE_4677[30]} no appreciable change during the preceding hour",
+    32 : f"{COMMON_TABLE_4677[30]} has begun or has increased during the preceding hour",
+    33 : f"{COMMON_TABLE_4677[33]} has decreased during the time preceding hour",
+    34 : f"{COMMON_TABLE_4677[33]} no appreciable change during the preceding hour",
+    35 : f"{COMMON_TABLE_4677[33]} has begun or has increased during the preceding hour",
+    36 : f"Slight or moderate drifting snow {COMMON_TABLE_4677[36]}",
+    37 : f"Heavy drifting snow {COMMON_TABLE_4677[36]}",
+    38 : f"Slight or moderate drifting snow {COMMON_TABLE_4677[38]}",
+    39 : f"Heavy drifting snow {COMMON_TABLE_4677[38]}",
+    # ww = 40 - 49 Fog or ice fog at the time of observation
+    40 : """Fog or ice fog at a distance at the time of observation, but not at the station
+during the preceding hour, the fog or ice fog extending to a level above that of
+the oberver""",
+    41 : "Fog or ice fog in patches",
+    42 : f"{COMMON_TABLE_4677[42]}, has become thinner during the preceding hour",
+    43 : f"{COMMON_TABLE_4677[43]}, has become thinner during the preceding hour",
+    44 : f"{COMMON_TABLE_4677[42]}, no appreciable change during the preceding hour",
+    45 : f"{COMMON_TABLE_4677[43]}, no appreciable change during the preceding hour",
+    46 : f"{COMMON_TABLE_4677[42]}, has begun or has become thicker during the preceding hour",
+    47 : f"{COMMON_TABLE_4677[43]}, has begun or has become thicker during the preceding hour",
+    48 : "Fog, depositing rime, sky visible",
+    49 : "Fog, depositing rime, sky invisible",
+    # ww = 50 - 99 Precipitation at the station at the time of observation
+    # ww = 50 - 59 Drizzle
+    50 : f"{COMMON_TABLE_4677[50]} slight at time of observation",
+    51 : f"{COMMON_TABLE_4677[51]} slight at time of observation",
+    52 : f"{COMMON_TABLE_4677[50]} moderate at time of observation",
+    53 : f"{COMMON_TABLE_4677[51]} moderate at time of observation",
+    54 : f"{COMMON_TABLE_4677[50]} heavy (dense) at time of observation",
+    55 : f"{COMMON_TABLE_4677[51]} heavy (dense) at time of observation",
+    56 : "Drizzle, freezing, slight",
+    57 : "Drizzle, freezing, moderate or heavy (dense)",
+    58 : "Drizzle and rain, slight",
+    59 : "Drizzle and rain, moderate or heavy (dense)",
+    # ww = 60 - 69 Rain
+    60 : f"{COMMON_TABLE_4677[60]} slight at time of obervation",
+    61 : f"{COMMON_TABLE_4677[61]} slight at time of obervation",
+    62 : f"{COMMON_TABLE_4677[60]} moderate at time of obervation",
+    63 : f"{COMMON_TABLE_4677[61]} moderate at time of obervation",
+    64 : f"{COMMON_TABLE_4677[60]} heavy at time of obervation",
+    65 : f"{COMMON_TABLE_4677[61]} heavy at time of obervation",
+    66 : "Rain, freezing, slight",
+    67 : "Rain, freezing, moderate or heavy",
+    68 : "Rain or drizzle and snow, slight",
+    69 : "Rain or drizzle and snow, moderate or heavy",
+    # ww = 70 - 79 Solid precipitation not in showers
+    70 : f"{COMMON_TABLE_4677[70]} slight at time of obervation",
+    71 : f"{COMMON_TABLE_4677[71]} slight at time of obervation",
+    72 : f"{COMMON_TABLE_4677[70]} moderate at time of obervation",
+    73 : f"{COMMON_TABLE_4677[71]} moderate at time of obervation",
+    74 : f"{COMMON_TABLE_4677[70]} heavy at time of obervation",
+    75 : f"{COMMON_TABLE_4677[71]} heavy at time of obervation",
+    76 : "Diamond dust (with or without fog)",
+    77 : "Snow grains (with or whitout fog)",
+    78 : "Isolated star-like snow crystals (with or without fog)",
+    79 : "Ice pellets",
+    # ww = 80 - 99 Showery precipitation, or precipitation with current or recent thunderstorm
+    80 : "Rain shower(s), slight",
+    81 : "Rain shower(s), moderate or heavy",
+    82 : "Rain shower(s), violent",
+    83 : "Shower(s) of rain and snow mixed, slight",
+    84 : "Shower(s) of rain and snow mixed, moderate or heavy",
+    85 : "Snow shower(s), slight",
+    86 : "Snow shower(s), moderate or heavy",
+    87 : f"{COMMON_TABLE_4677[87]} slight",
+    88 : f"{COMMON_TABLE_4677[87]} moderate or heavy",
+    89 : f"{COMMON_TABLE_4677[89]} slight",
+    90 : f"{COMMON_TABLE_4677[89]} moderate or heavy",
+    91 : f"Slight rain at the time of observation, {COMMON_TABLE_4677[91]}",
+    92 : f"Moderate or heavy rain at time of observation, {COMMON_TABLE_4677[91]}",
+    93 : f"""Slight snow, or rain and snow mixed or hail at time of observation,
+{COMMON_TABLE_4677[91]}""",
+    94 : f"""Moderate or heavy snow, or rain and snow mixed or hail at time of observation,
+{COMMON_TABLE_4677[91]}""",
+    95 : f"""Thunderstorm, slight or moderate, without hail, but with rain and/or snow at
+time of observation, {COMMON_TABLE_4677[95]}""",
+    96 : f"""Thunderstorm, slight or moderate, with hail at time ob observation,
+{COMMON_TABLE_4677[95]}""",
+    97 : f"""Thunderstorm, heavy, without hail, but with rain and/or snow at time of
+observation, {COMMON_TABLE_4677[95]}""",
+    98 : f"""Thunderstorm combined with duststorm or sandstorm at time of observation
+{COMMON_TABLE_4677[95]}""",
+    99 : f"""Thunderstorm, heavy, with hail at time of observation
+{COMMON_TABLE_4677[95]}"""
+}
+
 class Section_One(Section):
     
     group_index = 2
