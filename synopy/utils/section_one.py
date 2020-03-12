@@ -368,8 +368,7 @@ of obervation""",
     71 : "Continuous fall of snowflakes",
     87 : "Shower(s) of snow pellets or small hail, with or without rain or rain and snow mixed",
     89 : "Shower(s) of hail, with or without rain or rain and snow mixed, not associate with thunder",
-    91 : "thunderstorm during the preceding hour but not at time of observation",
-    95 : "thunderstorm at time of observation"
+    91 : "thunderstorm during the preceding hour but not at time of observation"
 }
 
 TABLE_4677 = {
@@ -504,6 +503,31 @@ observation""",
     99 : "Thunderstorm, heavy, with hail at time of observation"
 }
 
+class Group_7wwW1W2(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name,
+                         "Present and Past Weather Group reported from a manned weather station",
+                         requared=False)
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "7")
+        self._ww = Table_Indicator(self._extract_indicator(1, 3), "ww", TABLE_4677)
+        self._W1 = Table_Indicator(self._extract_indicator(3, 4), "W1", TABLE_4561)
+        self._W2 = Table_Indicator(self._extract_indicator(4, 5), "W2", TABLE_4561)
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=7)
+        if self.found:
+            self.verify_table_indicator(self._ww)
+            self.verify_table_indicator(self._W1)
+            self.verify_table_indicator(self._W2)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nPresent weather: {}".format(self._ww.__str__()))
+        characteristics.append("\nPast weather 1: {}".format(self._W1.__str__()))
+        characteristics.append("\nPast weather 2: {}".format(self._W2.__str__()))
+        return ''.join(characteristics)       
+
 class Section_One(Section):
     
     group_index = 2
@@ -570,6 +594,21 @@ class Section_One(Section):
         except IndexError:
             if self.iR < 3:
                 self.errors.append(ERRORS[3].format("iR", "6RRRtR"))
+        
+        # Group 7wwW1W2
+        try:
+            self._7wwW1W2 = Group_7wwW1W2(self.section[self.group_index], "7wwW1W2")
+            self._verify_indicators_and_copy_errors(self._7wwW1W2)
+            self._increment_group_index(self._7wwW1W2)
+            if self.iR < 3 and not self._7wwW1W2.found:
+                self.errors.append(ERRORS[3].format("iR", self._7wwW1W2.name))
+            elif self.iR >= 3 and self._7wwW1W2.found:
+                self.errors.append(ERRORS[4].format("iR", self._7wwW1W2.name))
+            else:
+                pass
+        except IndexError:
+            if self.iR < 3:
+                self.errors.append(ERRORS[3].format("iR", "7wwW1W2"))
 
     def _increment_group_index(self, group):
         if group.found:
