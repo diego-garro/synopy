@@ -83,11 +83,11 @@ class Group:
     
     _group_objective = ''
     group_indicator = None
-    found = True
     
     def __init__(self, group: str, name: str, objective: str, requared=True):
         self.group = group
         self.name = name
+        self.found = True
         self._errors = []
         self._group_objective = objective
         self.requared = requared

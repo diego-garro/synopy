@@ -6,6 +6,8 @@ ERRORS = {
     2 : "Indicator {} for {} can't be 000.",
     3 : "Indicator {} indicates precipitation data will be included, but group {} not included.",
     4 : "Indicator {} indicates not precipitation data will be included, but group {} included.",
+    5 : "Indicator {} indicates no clouds over the station, but group {} included.",
+    6 : "Indicator {} indicates clouds over the station, but group {} not included."
 }
 
 TABLE_1819 = {
@@ -161,7 +163,7 @@ class Group_00fff(Group_Nddff):
         self.verify_value_indicator(self._fff)
     
     def _show_characteristics(self):
-        return "\nWind speed: {} {}".format(self._fff.indicator, self.wind_units)
+        return "Wind speed: {} {}".format(self._fff.indicator, self.wind_units)
 
 class Group_1snTTT(Group):
     
@@ -600,13 +602,47 @@ phenomena, or because of continuous layer of lower clouds"""
 class Group_8NhCLCMCH(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Cloud Type Group")
+        super().__init__(group, name, "Cloud Type Group", requared=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "8")
         self._Nh = Table_Indicator(self._extract_indicator(1, 2), "Nh", TABLE_2700)
         self._CL = Table_Indicator(self._extract_indicator(2, 3), "CL", TABLE_0513)
         self._CM = Table_Indicator(self._extract_indicator(3, 4), "CM", TABLE_0515)
         self._CH = Table_Indicator(self._extract_indicator(4, 5), "CH", TABLE_0509)
-        
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=8)
+        if self.found:
+            self.verify_table_indicator(self._Nh)
+            self.verify_table_indicator(self._CL)
+            self.verify_table_indicator(self._CM)
+            self.verify_table_indicator(self._CH)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nAmount of low clouds or all CM clouds: {}".format(self._Nh.__str__()))
+        characteristics.append("\nCL type of clouds: {}".format(self._CL.__str__()))
+        characteristics.append("\nCM type of clouds: {}".format(self._CM.__str__()))
+        characteristics.append("\nCH type of clouds: {}".format(self._CH.__str__()))
+        return ''.join(characteristics)
+
+class Group_9GGgg(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Actual Time of Observation Group", requared=False)
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "9")
+        self._GG = Value_Indicator(self._extract_indicator(1, 3), "GG", "hour of observation")
+        self._gg = Value_Indicator(self._extract_indicator(3, 5), "gg", "minute of observation")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=9)
+        if self.found:
+            self.verify_value_indicator(self._GG)
+            self.verify_value_indicator(self._gg)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nActual time: {:02d}:{:02d}".format(self._GG.indicator, self._gg.indicator))
+        return ''.join(characteristics)
 
 class Section_One(Section):
     
@@ -620,12 +656,14 @@ class Section_One(Section):
         self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
         self._verify_indicators_and_copy_errors(self._iRixhVV)
         self.iR = self._iRixhVV.get_indicator("iR")
+        self._include_group_to_groups(self._iRixhVV)
         
         #Group Nddff
         self._Nddff = Group_Nddff(self.section[1], "Nddff", self.wind_units)
         self._verify_indicators_and_copy_errors(self._Nddff)
         self.N = self._Nddff.get_indicator("N")
         self.ff = self._Nddff.get_indicator("ff")
+        self._include_group_to_groups(self._Nddff)
         
         # Group 00fff
         if self.ff == 99:
@@ -689,6 +727,29 @@ class Section_One(Section):
         except IndexError:
             if self.iR < 3:
                 self.errors.append(ERRORS[3].format("iR", "7wwW1W2"))
+        
+        # Group 8NhCLCMCH
+        try:
+            self._8NhCLCMCH = Group_8NhCLCMCH(self.section[self.group_index], "8NhCLCMCH")
+            self._verify_indicators_and_copy_errors(self._8NhCLCMCH)
+            self._increment_group_index(self._8NhCLCMCH)
+            if self.N == 0 and self._8NhCLCMCH.found:
+                self.errors.append(ERRORS[5].format("N", self._8NhCLCMCH.name))
+            elif self.N != 0 and not self._8NhCLCMCH:
+                self.errors.append(ERRORS[6].format("N", self._8NhCLCMCH.name))
+            else:
+                pass
+        except IndexError:
+            if self.N != 0:
+                self.errors.append(ERRORS[6].format("N", self._8NhCLCMCH.name))
+        
+        # Group 9GGgg
+        try:
+            self._9GGgg = Group_9GGgg(self.section[self.group_index], "9GGgg")
+            self._verify_indicators_and_copy_errors(self._9GGgg)
+            self._increment_group_index(self._9GGgg)
+        except IndexError:
+            pass
 
     def _increment_group_index(self, group):
         if group.found:
