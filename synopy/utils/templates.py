@@ -141,11 +141,12 @@ class Group:
 
 class Section:
     
-    def __init__(self, section: list):
+    def __init__(self, section: list, index: int):
         self.section = section
         self._groups = []
         self.errors = []
         self.length = len(section)
+        self.group_index = index
     
     def copy_group_errors(self, group):
         for error in group.errors():
@@ -159,6 +160,15 @@ class Section:
         for group in self._groups:
             message += "\n{}".format(group)
         return message
+    
+    def _increment_group_index(self, group):
+        if group.found:
+            self._include_group_to_groups(group)
+            self.group_index += 1
+        
+    def _verify_indicators_and_copy_errors(self, group):
+        group.verify_indicators()
+        self.copy_group_errors(group)
     
     def __str__(self):
         return self._show_characteristics()

@@ -646,10 +646,8 @@ class Group_9GGgg(Group):
 
 class Section_One(Section):
     
-    group_index = 2
-    
-    def __init__(self, section: list, wind_units: str):
-        super().__init__(section)
+    def __init__(self, section: list, wind_units: str, index=2):
+        super().__init__(section, index)
         self.wind_units = wind_units
         
         # Group iRixhVV
@@ -750,17 +748,3 @@ class Section_One(Section):
             self._increment_group_index(self._9GGgg)
         except IndexError:
             pass
-
-    def _increment_group_index(self, group):
-        if group.found:
-            self._include_group_to_groups(group)
-            self.group_index += 1
-        
-    def _verify_indicators_and_copy_errors(self, group):
-        group.verify_indicators()
-        self.copy_group_errors(group)
-    
-    # def __str__(self):
-    #     return ".:SECTION ONE:.\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(x for x in self._groups).replace("\n\n", "\n")
-        
-        
