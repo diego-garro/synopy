@@ -526,7 +526,87 @@ class Group_7wwW1W2(Group):
         characteristics.append("\nPresent weather: {}".format(self._ww.__str__()))
         characteristics.append("\nPast weather 1: {}".format(self._W1.__str__()))
         characteristics.append("\nPast weather 2: {}".format(self._W2.__str__()))
-        return ''.join(characteristics)       
+        return ''.join(characteristics)
+
+TABLE_0513 = {
+    -2 : "Table 0513",
+    -1 : "Clouds of the genera stratocumulus, stratus, cumulus and cumulonimbus",
+     0 : "No CL clouds",
+     1 : "Cumulus humilis or cumulus fractus other than of bad weather, or both",
+     2 : """Cumulus mediocris or congestus, with or without cumulus of species fractus or humilis
+or stratocumulus, all having their bases at the same level""",
+     3 : "Cumulonimbus calvus, with or without cumulus, stratocumulus or stratus",
+     4 : "Stratocumulus cumulogenitus",
+     5 : "Stratocumulus other than stratocumulus cumulogenitus",
+     6 : "Stratus nebulosus or stratus fractus other than or bad weather, or both",
+     7 : """Stratus fractus or cumulus fractus of bad weather, or both (pannus), usually below
+altostratus or nimbostratus""",
+     8 : """Cumulus or stratocumulus other than stratocumulus cumulogenitus, with bases at
+different levels""",
+     9 : """Cumulonimbus capilatus (often with an anvil), with or without cumulonimbus calvus,
+cumulus, stratocumulus, stratus or pannus""",
+    "/": """CL clouds invisible owing to darkness, fog, blowing dust or sand, or other similar
+phenomena"""
+    # * "Bad weather" denotes the conditions which generally exists during precipitation and a short
+    #   time before and after
+}
+
+TABLE_0515 = {
+    -2 : "Table 0515",
+    -1 : "Clouds of the genera altocumulus, altostratus and nimbostratus",
+     0 : "No CM clouds",
+     1 : "Altocumulus translucidus",
+     2 : "Altocumulus opacus or nimbostratus",
+     3 : "Altocumulus translucidus at a same level",
+     4 : """Patches (often lenticular) of altocumulus translucidus, continuanly changing
+and ocurring at one or more levels""",
+     5 : """Altocumulus translucidus in bands, or one or more layers of altocumulus translucidus  or
+opacus, progressively invading the sky; these altocumulus clouds generally thicken
+as a whole""",
+     6 : "Altocumulus cumulogenitus (or cumulonimbogenitus)",
+     7 : """Altocumulus translucidus or opacus in two or more layers, or altocumulus opacus in a
+single layer, not progressively invading the sky, or altocumulus with altostratus or
+nimbostraus""",
+     8 : "Altocumulus castellanus or floccus",
+     9 : "Altocumulus of a chaotic sky, generally at several levels",
+    "/": """CM clouds invisible owing to darkness, fog, blowing dust or sand, or other similar
+phenomena, or because of continuous layer of lower clouds"""
+}
+
+TABLE_0509 = {
+    -2 : "Table 0509",
+    -1 : "Clouds of the genera cirrus, cirrucumulus and cirrustratus",
+     0 : "No CH clouds",
+     1 : "Cirrus fibratus, sometimes uncinus, not progressively invading the sky",
+     2 : """Cirrus spissatus, in patches or entangled sheaves, which usually do not increase and
+sometimes seem to be the remains of the upper part of cumulonimbus; or cirrus
+castellanus or floccus""",
+     3 : "Cirrus spissatus cumulonimbogenitus",
+     4 : """Cirrus uncinos o fibratus, or both, progressively invading the sky, they generally
+thicken as a whole""",
+     5 : """Cirrus (often in bands) and cirrustratus, or cirrustratus alone, progressively invading the
+sky; they generally thicken as a whole, but the continuous veil does not reach 45
+degrees above the horizon""",
+     6 : """Cirrus (often in bands) and cirrustratus, or cirrustratus alone, progressively invading the
+sky; they generally thicken as a whole, the continuous veil extends more than 45
+degrees above the horizon, without the sky being totally covered""",
+     7 : "Cirrostratus covering the whole sky",
+     8 : "Cirrostratus not progressively invading the sky and not entirely covering it",
+     9 : "Cirrocumulus alone, or cirrocumulus predominant among the CH clouds",
+    "/": """CH clouds invisible owing to darkness, fog, blowing dust or sand, or other similar
+phenomena, or because of continuous layer of lower clouds"""
+}
+
+class Group_8NhCLCMCH(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Cloud Type Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "8")
+        self._Nh = Table_Indicator(self._extract_indicator(1, 2), "Nh", TABLE_2700)
+        self._CL = Table_Indicator(self._extract_indicator(2, 3), "CL", TABLE_0513)
+        self._CM = Table_Indicator(self._extract_indicator(3, 4), "CM", TABLE_0515)
+        self._CH = Table_Indicator(self._extract_indicator(4, 5), "CH", TABLE_0509)
+        
 
 class Section_One(Section):
     
