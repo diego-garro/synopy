@@ -641,7 +641,7 @@ class Group_9GGgg(Group):
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
-        characteristics.append("\nActual time: {:02d}:{:02d}".format(self._GG.indicator, self._gg.indicator))
+        characteristics.append("\nActual time: {:02d}:{:02d}Z".format(self._GG.indicator, self._gg.indicator))
         return ''.join(characteristics)
 
 class Section_One(Section):
