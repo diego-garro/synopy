@@ -115,7 +115,7 @@ class Group:
             self.found = False
             if self.requared:
                 self._errors.append(ERRORS[3].format(self.name, self._group_objective))
-      
+
     def verify_table_indicator(self, indicator):
         if not indicator.verify_indicator():
             self._errors.append(ERRORS[4].format(indicator.name, indicator.objective, indicator.table[-2]))

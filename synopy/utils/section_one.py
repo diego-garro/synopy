@@ -648,7 +648,6 @@ class Section_One(Section):
     
     def __init__(self, section: list, wind_units: str, index=2):
         super().__init__(section, index)
-        self.wind_units = wind_units
         
         # Group iRixhVV
         self._iRixhVV = Group_iRixhVV(self.section[0], "iRixhVV")
@@ -657,7 +656,7 @@ class Section_One(Section):
         self._include_group_to_groups(self._iRixhVV)
         
         #Group Nddff
-        self._Nddff = Group_Nddff(self.section[1], "Nddff", self.wind_units)
+        self._Nddff = Group_Nddff(self.section[1], "Nddff", wind_units)
         self._verify_indicators_and_copy_errors(self._Nddff)
         self.N = self._Nddff.get_indicator("N")
         self.ff = self._Nddff.get_indicator("ff")
@@ -665,7 +664,7 @@ class Section_One(Section):
         
         # Group 00fff
         if self.ff == 99:
-            self._00fff = Group_00fff(self.section[self.group_index], "00fff", self.wind_units)
+            self._00fff = Group_00fff(self.section[self.group_index], "00fff", wind_units)
             self._verify_indicators_and_copy_errors(self._00fff)
             self._increment_group_index(self._00fff)
         else:

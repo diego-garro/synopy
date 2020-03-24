@@ -2,6 +2,7 @@
 import re
 from .utils import station_tools as tools
 from .utils.section_one import Section_One
+from .utils.section_two import Section_Two
 from datetime import datetime
 
 ERRORS = {
@@ -26,7 +27,7 @@ class Synoptic:
         self.station_name = self._set_station_name()
         self.wind_units = self._set_wind_units()
         self.section_one = Section_One(self._set_section(), self.report[2][-1])
-        self.section_two = self._set_section(section_separator='222')
+        self.section_two = Section_Two(self._set_section(section_separator='222'))
         self.section_three = self._set_section(section_separator='333')
         self.section_four = self._set_section(section_separator='444')
         self._copy_errors()
