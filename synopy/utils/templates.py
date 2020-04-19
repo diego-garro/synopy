@@ -26,9 +26,8 @@ class Group_Indicator:
 
 class Table_Indicator:
     
-    valid = True
-    
     def __init__(self, indicator: str, name: str, table: dict):
+        self.valid = True
         self.name = name
         self.table = table
         self.objective = table[-1]

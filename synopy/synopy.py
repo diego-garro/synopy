@@ -66,7 +66,7 @@ class Synoptic:
         return section
     
     def _copy_errors(self):
-        sections = [self.section_one]
+        sections = [self.section_one, self.section_two]
         for section in sections:
             for err in section.errors:
                 self.errors.append(err)

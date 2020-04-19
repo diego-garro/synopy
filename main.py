@@ -24,5 +24,6 @@ for line in data:
     print("\nSection Three: {}".format(synoptic_report.section_three))
     print("\nSection Four: {}".format(synoptic_report.section_four))
     print("Errores seccion 1: {}".format(synoptic_report.section_one.errors))
+    print("Errores seccion 2: {}".format(synoptic_report.section_two.errors))
     print("Errores del simóptico: {}".format(synoptic_report.errors))
     print("###################################################################################")
