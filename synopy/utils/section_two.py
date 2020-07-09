@@ -1,6 +1,7 @@
 
 from .templates import Group, Section, Group_Indicator, Table_Indicator, Value_Indicator
 from datetime import datetime
+from .section_one import TABLE_0877
 
 ERRORS = {
     1 : "Indicator {} for {} group, only can take 0 or 1 as value.",
@@ -78,6 +79,46 @@ class Group_1PwaPwaHwaHwa(Group):
         characteristics.append("\nHeight of waves: {}".format(self._HwaHwa.__str__()))
         return ''.join(characteristics)
 
+class Group_2PwPwHwHw(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Wind Wave Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "2")
+        self._PwPw = Value_Indicator(self._extract_indicator(1, 3), "PwPw", "estimated period of the wind wave in whole seconds")
+        self._HwHw = Value_Indicator(self._extract_indicator(3, 5), "HwHw", "estimated height of the wind waves in units of half-meters")
+
+    def verify_indicators(self):
+        self.verify_group_indicator(value=2)
+        if self.found:
+            self.verify_value_indicator(self._PwPw)
+            self.verify_value_indicator(self._HwHw)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nPeriod of the wind wave: {} seconds".format(self._PwPw.indicator))
+        characteristics.append("\nHeight of wind waves: {} half-meters".format(self._HwHw.indicator))
+        return ''.join(characteristics)
+
+class Group_3dw1dw1dw2dw2(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Swell Wave Direction Group")
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "3")
+        self._dw1dw1 = Table_Indicator(self._extract_indicator(1, 3), "dw1dw1", TABLE_0877)
+        self._dw2dw2 = Table_Indicator(self._extract_indicator(3, 5), "dw2dw2", TABLE_0877)
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=3)
+        if self.found:
+            self.verify_table_indicator(self._dw1dw1)
+            self.verify_table_indicator(self._dw2dw2)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nTrue direction, from which first swell wave is moving: {}".format(self._dw1dw1.__str__()))
+        characteristics.append("\nTrue direction, from which second swell wave is moving: {}".format(self._dw2dw2.__str__()))
+        return ''.join(characteristics)
+
 class Section_Two(Section):
     
     def __init__(self, section: list, index=0):
@@ -93,3 +134,13 @@ class Section_Two(Section):
             self._1PwaPwaHwaHwa = Group_1PwaPwaHwaHwa(self.section[1], "1PwaPwaHwaHwa")
             self._verify_indicators_and_copy_errors(self._1PwaPwaHwaHwa)
             self._include_group_to_groups(self._1PwaPwaHwaHwa)
+
+            # Group 2PwPwHwHw
+            self._2PwPwHwHw = Group_2PwPwHwHw(self.section[2], "2PwPwHwHw")
+            self._verify_indicators_and_copy_errors(self._2PwPwHwHw)
+            self._include_group_to_groups(self._2PwPwHwHw)
+
+            # Group 3dw1dw1dw2dw2
+            self._3dw1dw1dw2dw2 = Group_3dw1dw1dw2dw2(self.section[3], "3dw1dw1dw2dw2")
+            self._verify_indicators_and_copy_errors(self._3dw1dw1dw2dw2)
+            self._include_group_to_groups(self._3dw1dw1dw2dw2)
