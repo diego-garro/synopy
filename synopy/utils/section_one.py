@@ -311,7 +311,7 @@ TABLE_4019 = {
 class Group_6RRRtR(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Amount of Precipitation Group", requared=False)
+        super().__init__(group, name, "Amount of Precipitation Group", required=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "6")
         self._RRR = Value_Indicator(self._extract_indicator(1, 4), "RRR",
                                     "total amount of precipitation fallen during the period preceding the observation")
@@ -510,7 +510,7 @@ class Group_7wwW1W2(Group):
     def __init__(self, group: str, name: str):
         super().__init__(group, name,
                          "Present and Past Weather Group reported from a manned weather station",
-                         requared=False)
+                         required=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "7")
         self._ww = Table_Indicator(self._extract_indicator(1, 3), "ww", TABLE_4677)
         self._W1 = Table_Indicator(self._extract_indicator(3, 4), "W1", TABLE_4561)
@@ -602,7 +602,7 @@ phenomena, or because of continuous layer of lower clouds"""
 class Group_8NhCLCMCH(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Cloud Type Group", requared=False)
+        super().__init__(group, name, "Cloud Type Group", required=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "8")
         self._Nh = Table_Indicator(self._extract_indicator(1, 2), "Nh", TABLE_2700)
         self._CL = Table_Indicator(self._extract_indicator(2, 3), "CL", TABLE_0513)
@@ -628,7 +628,7 @@ class Group_8NhCLCMCH(Group):
 class Group_9GGgg(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Actual Time of Observation Group", requared=False)
+        super().__init__(group, name, "Actual Time of Observation Group", required=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "9")
         self._GG = Value_Indicator(self._extract_indicator(1, 3), "GG", "hour of observation")
         self._gg = Value_Indicator(self._extract_indicator(3, 5), "gg", "minute of observation")

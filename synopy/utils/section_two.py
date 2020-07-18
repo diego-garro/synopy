@@ -34,7 +34,7 @@ class Group_0snTwTwTw(Group):
         return ''.join(characteristics)
 
 TABLE_wave_height = {
-    -2 : "Wave Height HwaHwa Table",
+    -2 : "Wave Height Table",
     -1 : "Wave Height",
      0 : "<0.25 meters (<0.8 feet)",
      1 : "0.25 - <0.75 meters (0.8 - <2.5 feet)",
@@ -62,10 +62,11 @@ TABLE_wave_height = {
 class Group_1PwaPwaHwaHwa(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Instrumental Wave Data Group")
+        super().__init__(group, name, "Instrumental Wave Data Group", required=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "1")
         self._PwaPwa = Value_Indicator(self._extract_indicator(1, 3), "PwaPwa", "period of the waves obtained by instrumental methods, in whole seconds")
         self._HwaHwa = Table_Indicator(self._extract_indicator(3, 5), "HwaHwa", TABLE_wave_height)
+        print("AAAAAHHHHHHH", self._extract_indicator(3, 5))
     
     def verify_indicators(self):
         self.verify_group_indicator(value=1)
@@ -82,27 +83,27 @@ class Group_1PwaPwaHwaHwa(Group):
 class Group_2PwPwHwHw(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Wind Wave Group")
+        super().__init__(group, name, "Wind Wave Group", required=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "2")
         self._PwPw = Value_Indicator(self._extract_indicator(1, 3), "PwPw", "estimated period of the wind wave in whole seconds")
-        self._HwHw = Value_Indicator(self._extract_indicator(3, 5), "HwHw", "estimated height of the wind waves in units of half-meters")
+        self._HwHw = Table_Indicator(self._extract_indicator(3, 5), "HwHw", TABLE_wave_height)
 
     def verify_indicators(self):
         self.verify_group_indicator(value=2)
         if self.found:
             self.verify_value_indicator(self._PwPw)
-            self.verify_value_indicator(self._HwHw)
+            self.verify_table_indicator(self._HwHw)
     
     def _show_characteristics(self):
         characteristics = [".:{}:.".format(self._group_objective)]
         characteristics.append("\nPeriod of the wind wave: {} seconds".format(self._PwPw.indicator))
-        characteristics.append("\nHeight of wind waves: {} half-meters".format(self._HwHw.indicator))
+        characteristics.append("\nHeight of wind waves: {}".format(self._HwHw.__str__()))
         return ''.join(characteristics)
 
 class Group_3dw1dw1dw2dw2(Group):
     
     def __init__(self, group: str, name: str):
-        super().__init__(group, name, "Swell Wave Direction Group")
+        super().__init__(group, name, "Swell Wave Direction Group", required=False)
         self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "3")
         self._dw1dw1 = Table_Indicator(self._extract_indicator(1, 3), "dw1dw1", TABLE_0877)
         self._dw2dw2 = Table_Indicator(self._extract_indicator(3, 5), "dw2dw2", TABLE_0877)
@@ -119,9 +120,66 @@ class Group_3dw1dw1dw2dw2(Group):
         characteristics.append("\nTrue direction, from which second swell wave is moving: {}".format(self._dw2dw2.__str__()))
         return ''.join(characteristics)
 
+class Group_4Pw1Pw1Hw1Hw1(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "First Swell Wave System Group", required=False)
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "4")
+        self._Pw1Pw1 = Value_Indicator(self._extract_indicator(1, 3), "Pw1Pw1", "period of the first swell system in whole seconds")
+        self._Hw1Hw1 = Table_Indicator(self._extract_indicator(3, 5), "Hw1Hw1", TABLE_wave_height)
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=4)
+        if self.found:
+            self.verify_value_indicator(self._Pw1Pw1)
+            self.verify_table_indicator(self._Hw1Hw1)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nPeriod of the first swell system: {} seconds".format(self._Pw1Pw1.indicator))
+        characteristics.append("\nAverage height of the significant swell waves: {}".format(self._Hw1Hw1.__str__()))
+        return ''.join(characteristics)
+
+class Group_5Pw2Pw2Hw2Hw2(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Second Swell Wave System Group", required=False)
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 1), "5")
+        self._Pw2Pw2 = Value_Indicator(self._extract_indicator(1, 3), "Pw2Pw2", "period of the second swell system in whole seconds")
+        self._Hw2Hw2 = Table_Indicator(self._extract_indicator(3, 5), "Hw2Hw2", TABLE_wave_height)
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=5)
+        if self.found:
+            self.verify_value_indicator(self._Pw2Pw2)
+            self.verify_table_indicator(self._Hw2Hw2)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nPeriod of the second swell system: {} seconds".format(self._Pw2Pw2.indicator))
+        characteristics.append("\nAverage height of the significant swell waves: {}".format(self._Hw2Hw2.__str__()))
+        return ''.join(characteristics)
+
+class Group_70HwaHwaHwa(Group):
+    
+    def __init__(self, group: str, name: str):
+        super().__init__(group, name, "Instrumental Wave Height Group", required=False)
+        self.group_indicator = Group_Indicator(self._extract_indicator(0, 2), "70")
+        self._HwaHwaHwa = Value_Indicator(self._extract_indicator(2, 5), "HwaHwaHwa", "Height of waves, obtained by instrumental methods, in units of 0.1 meters")
+    
+    def verify_indicators(self):
+        self.verify_group_indicator(value=70)
+        if self.found:
+            self.verify_value_indicator(self._HwaHwaHwa)
+    
+    def _show_characteristics(self):
+        characteristics = [".:{}:.".format(self._group_objective)]
+        characteristics.append("\nHeight of waves: {} meters".format(self._HwaHwaHwa.indicator / 10))
+        return ''.join(characteristics)
+
 class Section_Two(Section):
     
-    def __init__(self, section: list, index=0):
+    def __init__(self, section: list, index=1):
         super().__init__(section, index)
         
         if len(self.section) > 0:
@@ -131,16 +189,48 @@ class Section_Two(Section):
             self._include_group_to_groups(self._0snTwTwTw)
 
             # Group 1PwaPwaHwaHwa
-            self._1PwaPwaHwaHwa = Group_1PwaPwaHwaHwa(self.section[1], "1PwaPwaHwaHwa")
-            self._verify_indicators_and_copy_errors(self._1PwaPwaHwaHwa)
-            self._include_group_to_groups(self._1PwaPwaHwaHwa)
+            try:
+                self._1PwaPwaHwaHwa = Group_1PwaPwaHwaHwa(self.section[self.group_index], "1PwaPwaHwaHwa")
+                self._verify_indicators_and_copy_errors(self._1PwaPwaHwaHwa)
+                self._increment_group_index(self._1PwaPwaHwaHwa)
+            except IndexError:
+                pass
 
             # Group 2PwPwHwHw
-            self._2PwPwHwHw = Group_2PwPwHwHw(self.section[2], "2PwPwHwHw")
-            self._verify_indicators_and_copy_errors(self._2PwPwHwHw)
-            self._include_group_to_groups(self._2PwPwHwHw)
-
+            try:
+                self._2PwPwHwHw = Group_2PwPwHwHw(self.section[self.group_index], "2PwPwHwHw")
+                self._verify_indicators_and_copy_errors(self._2PwPwHwHw)
+                self._increment_group_index(self._2PwPwHwHw)
+            except IndexError:
+                pass
+            
             # Group 3dw1dw1dw2dw2
-            self._3dw1dw1dw2dw2 = Group_3dw1dw1dw2dw2(self.section[3], "3dw1dw1dw2dw2")
-            self._verify_indicators_and_copy_errors(self._3dw1dw1dw2dw2)
-            self._include_group_to_groups(self._3dw1dw1dw2dw2)
+            try:
+                self._3dw1dw1dw2dw2 = Group_3dw1dw1dw2dw2(self.section[self.group_index], "3dw1dw1dw2dw2")
+                self._verify_indicators_and_copy_errors(self._3dw1dw1dw2dw2)
+                self._increment_group_index(self._3dw1dw1dw2dw2)
+            except IndexError:
+                pass
+            
+            # Group 4Pw1Pw1Hw1Hw1
+            try:
+                self._4Pw1Pw1Hw1Hw1 = Group_4Pw1Pw1Hw1Hw1(self.section[self.group_index], "4Pw1Pw1Hw1Hw1")
+                self._verify_indicators_and_copy_errors(self._4Pw1Pw1Hw1Hw1)
+                self._increment_group_index(self._4Pw1Pw1Hw1Hw1)
+            except IndexError:
+                pass
+            
+            # Group 5Pw2Pw2Hw2Hw2
+            try:
+                self._5Pw2Pw2Hw2Hw2 = Group_5Pw2Pw2Hw2Hw2(self.section[self.group_index], "5Pw2Pw2Hw2Hw2")
+                self._verify_indicators_and_copy_errors(self._5Pw2Pw2Hw2Hw2)
+                self._increment_group_index(self._5Pw2Pw2Hw2Hw2)
+            except IndexError:
+                pass
+            
+            try:
+                self._70HwaHwaHwa = Group_70HwaHwaHwa(self.section[self.group_index], "70HwaHwaHwa")
+                self._verify_indicators_and_copy_errors(self._70HwaHwaHwa)
+                self._increment_group_index(self._70HwaHwaHwa)
+            except IndexError:
+                pass

@@ -34,9 +34,7 @@ class Table_Indicator:
         self._set_indicator_value(indicator)
     
     def _set_indicator_value(self, indicator: str):
-        if indicator == "/":
-            self.indicator = indicator
-        elif indicator.isdigit():
+        if indicator.isdigit():
             self.indicator = int(indicator)
         else:
             self.indicator = indicator
@@ -50,7 +48,7 @@ class Table_Indicator:
     def __str__(self):
         if self.valid:
             return self.table[self.indicator]
-        return 'Indicator {} not valid.'.format(self.name)
+        return 'Not possible estimate the indicator "{}" or not valid.'.format(self.name)
 
 class Value_Indicator:
     
@@ -83,13 +81,13 @@ class Group:
     _group_objective = ''
     group_indicator = None
     
-    def __init__(self, group: str, name: str, objective: str, requared=True):
+    def __init__(self, group: str, name: str, objective: str, required=True):
         self.group = group
         self.name = name
         self.found = True
         self._errors = []
         self._group_objective = objective
-        self.requared = requared
+        self.required = required
         self.length = len(group)
         if self.length > 5:
             self._errors.append(ERRORS[1].format(self.name))
@@ -112,7 +110,7 @@ class Group:
             pass
         else:
             self.found = False
-            if self.requared:
+            if self.required:
                 self._errors.append(ERRORS[3].format(self.name, self._group_objective))
 
     def verify_table_indicator(self, indicator):
